@@ -1,0 +1,141 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css?family=Architects+Daughter');
+ h1{
+    font-family: Numans, sans-serif;
+    font-weight: bold;
+    font-style: italic;
+    text-transform: capitalize;
+    text-align: center;
+    font-size: 45px;
+    color:black;
+    text-shadow: rgb(245, 245, 245) 2px 2px 2px;
+ }
+</style>
+
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>Yapılacaklar Listesi</h1>
+        <form name="form" [formGroup]="form">
+          <div class="form-group">
+            <input
+              type="text"
+              class="form-control"
+              for="firstTask"
+              formControlName="firstTask"
+              [ngClass]="{ 'is-invalid': form.get('firstTask').touched && form.get('firstTask').invalid }"
+              placeholder="Buradan görev ekleyebilirsiniz.."
+              aria-describedby="button-addon2"
+              [(ngModel)]="addTaskValue"
+              (keyup.enter)="addToDo(taskInput.value)"
+              #taskInput
+             />
+            <div class="invalid-feedback">
+              <div>Lütfen görev giriniz..</div>
+            </div>
+          </div>
+        </form>
+
+        <div class="input-group-append">
+          <div class="form-group">
+            <button class="btn btn-primary btn-lg" type="button" style="position: absolute; right: 0;"
+             (click)="addToDo(taskInput.value)" [disabled]="!form.valid">Ekle</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="dropdown">
+        <button
+          class="btn btn-secondary dropdown-toggle"
+          type="button"
+          id="dropdownMenuButton"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          Seçenekler
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+          <a class="dropdown-item" href="#" (click)="clearAll()"
+            >Tüm görevleri sil</a>
+          <a class="dropdown-item" href="#" (click)="allTaskComplete()"
+            >Seçilen görevleri tamamla</a>
+        </div>
+      </div>
+
+      <table class="table table-bordered mt-2" *ngIf="tasks.length > 0">
+        <thead>
+          <tr>
+            <th>
+              <input
+                type="checkbox"
+                [(ngModel)]="selectedAll"
+                (change)="selectAll(idTask)"
+              />
+              Hepsini seç
+            </th>
+            <th>Yapılacaklar</th>
+            <th>İşlemler</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let task of tasks; let idTask = index"
+            [ngClass]="task.isComplete == true ? 'bg-info' : 'bg-light'"
+          >
+            <td>
+              <input
+                type="checkbox"
+                (change)="checkTask($event, idTask)"
+                [(ngModel)]="task.selected"
+                (change)="checkIfAllSelected()"
+              />
+            </td>
+            
+            <td>
+            {{ task.id }}. {{ task.title }}
+            </td>
+            
+            <td>
+              <button
+                class="btn btn-danger btn-sm"
+                (click)="cancelTask(idTask)"
+              >
+                Sil
+              </button>
+              &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+              <button class="btn btn-primary btn-xs" (click)="editTask(idTask)"
+               >
+                Düzenle
+              </button>
+              &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+              <button
+                class="btn btn-dark"
+                type="button"
+                (click)="completeTask(task)"
+                (dbclick)="backComplete(task)"
+                [ngStyle]="{ 'background-color': task.buttonColor }"
+                id="completed"
+              >
+                {{ task.isComplete == true ? "Tamamlandı" : "Tamamlanmadı" }}
+              </button>
+            </td>
+
+            <td>
+                <span  style='font-size:30px;' (click)=tableUp(idTask)>&#11161;</span>
+                &nbsp;
+                <span  style='font-size:30px;' (click)=tableDown(idTask)>&#11163;</span>
+               </td>
+          </tr>
+        </tbody>
+      </table>
+      <div *ngIf="tasks.length == 0">
+        <div class="alert alert-info" role="alert" >
+          Henüz görev eklenmedi.
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
